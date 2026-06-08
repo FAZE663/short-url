@@ -1,9 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect } from 'react'
+import './App.css'
+
 
 export default function App() {
+  const [history, setHistory] = useState([])
   const [url, setUrl] = useState('')
   const [output, setOutput] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(()=>{
+    const saved = JSON.parse(
+      localStorage.getItem('shortHistory') || '[]'
+    )
+
+    setHistory(saved)
+  },[])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -16,7 +27,20 @@ export default function App() {
         body: JSON.stringify({ url })
       })
       const data = await res.json()
-      setOutput(data.short_url || JSON.stringify(data))
+      const shortUrl = data.short_url || JSON.stringify(data)
+      setOutput(shortUrl)
+      const updatedHistory = [
+        [
+          shortUrl, url
+      ],
+        ...history
+      ].slice(0, 10)
+      setHistory(updatedHistory)
+
+      localStorage.setItem(
+        'shortHistory',
+        JSON.stringify(updatedHistory)
+      )
     } catch (err) {
       setOutput('Error creating short link')
     } finally {
@@ -41,11 +65,45 @@ export default function App() {
       </form>
 
       {output && (
-        <div className="result">
-          <strong>Result:</strong>
-          <div>{output}</div>
+      <div className="result">
+        <strong>Result:</strong>
+        <div>
+          <a href={output} target="_blank" rel="noopener noreferrer">
+            {output}
+          </a>
         </div>
-      )}
+        <div><button onClick={() => navigator.clipboard.writeText(output)}>
+            Copy
+          </button></div>
+      </div>
+    )}
+
+      {history.length > 0 && (
+      <div className="history">
+        <h2>Recent URLs</h2>
+
+        <ul>
+          {history.map((item, index) => (
+            <li key={index} className="history-item">
+              <a
+                href={item[0]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="short-url"
+              >
+                {item[0]}
+              </a>
+
+              <span>→</span>
+
+              <span className="original-url">
+                {item[1]}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
     </main>
   )
 }
