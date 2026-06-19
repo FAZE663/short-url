@@ -5,6 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from .short import shorten
 from .storage import addentry ,getentry
+import os 
+
+
+FRONTEND_URL = os.getenv('FRONTEND_URL')
 
 
 from .database.db import get_db
@@ -44,7 +48,7 @@ def short(payload : Payload , db : Session = Depends(get_db) ):
     addentry(db, shurl,lourl)
 
     return {
-        "short_url": f"http://localhost:8000/{shurl}"
+        "short_url": f"{FRONTEND_URL}/{shurl}"
     }
 
 
@@ -59,11 +63,24 @@ def redirect(shurl , db : Session = Depends(get_db)):
     #get value from temparr and redirect to correcturl
     print(shurl)
     data = getentry(db,shurl)
-    if data is not None:
-        print("site found")
-        lourl = data.url
-        print(lourl)
+    
 
-        return RedirectResponse(url= lourl)
-    return RedirectResponse(url="/")   
+    if data is None:
+        return RedirectResponse(url=f"{FRONTEND_URL}/error") 
+    
+    if not data.isactive:
+        return RedirectResponse(url=f"{FRONTEND_URL}/error?reason=expired")
+    
+    if data.expires_at <= datetime.now():
+        data.isactive=False
+        db.commit() 
+        
+        return RedirectResponse(url=f"{FRONTEND_URL}/error?reason=expired")
+
+    data.clicks +=1
+    db.commit()
+
+    return RedirectResponse(url= data.url)
+    
+     
 

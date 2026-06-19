@@ -1,5 +1,6 @@
 import { useState , useEffect } from 'react'
 import React from 'react'
+import QRCode from "react-qr-code"
 import './App.css'
 
 export default function Home() {
@@ -49,61 +50,88 @@ export default function Home() {
       }
     
       return (
-        <main className="container">
-          <h1>Shorten a URL</h1>
-          <form onSubmit={handleSubmit} className="form">
-            <label htmlFor="url">URL</label>
-            <input
-              id="url"
-              type="url"
-              required
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com"
-            />
-            <button type="submit" disabled={loading}>{loading ? 'Shortening…' : 'Shorten'}</button>
-          </form>
-    
-          {output && (
-          <div className="result">
-            <strong>Result:</strong>
-            <div>
-              <a href={output} target="_blank" rel="noopener noreferrer">
-                {output}
-              </a>
-            </div>
-            <div><button onClick={() => navigator.clipboard.writeText(output)}>
-                Copy
-              </button></div>
+  <main className="container">
+    <div className="hero-card">
+      <h1>🔗 URL Shortener</h1>
+      <p className="subtitle">
+        Transform long URLs into short, shareable links.
+      </p>
+
+      <form onSubmit={handleSubmit} className="form">
+        <label htmlFor="url">Enter URL</label>
+
+        <input
+          id="url"
+          type="url"
+          required
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://example.com"
+        />
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Shortening..." : "Generate Link"}
+        </button>
+      </form>
+    </div>
+
+    {output && (
+      <section className="result-card">
+        <h2>Your Short Link</h2>
+
+        <div className="link-box">
+          <a
+            href={output}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {output}
+          </a>
+
+          <button
+            onClick={() => navigator.clipboard.writeText(output)}
+          >
+            Copy
+          </button>
+        </div>
+        <h3>QR Code</h3>
+        <div className="qr-section">
+          
+
+          <div className="qr-container">
+            <QRCode value={output} size={180} />
           </div>
-        )}
-    
-          {history.length > 0 && (
-          <div className="history">
-            <h2>Recent URLs</h2>
-    
-            <ul>
-              {history.map((item, index) => (
-                <li key={index} className="history-item">
-                  <a
-                    href={item[0]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="short-url"
-                  >
-                    {item[0]}
-                  </a>
-    
-                  <span>→</span>
-    
-                  <span className="original-url">
-                    {item[1]}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        </main>
-      )
+        </div>
+      </section>
+    )}
+
+    {history.length > 0 && (
+      <section className="history-card">
+        <h2>Recent Links</h2>
+
+        <ul className="history-list">
+          {history.map((item, index) => (
+            <li key={index} className="history-item">
+              <div className="history-short">
+                <a
+                  href={item[0]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item[0]}
+                </a>
+              </div>
+
+              <span className="arrow">→</span>
+
+              <div className="history-original">
+                {item[1]}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </main>
+)
 }

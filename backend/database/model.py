@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,String,DateTime,Boolean
+from sqlalchemy import Column,Integer,String,DateTime,Boolean,BLOB
 
 from datetime import datetime , timedelta
 
@@ -21,4 +21,5 @@ class shorturl(Base):
     expires_at = Column(DateTime , default=datetime.now() + timedelta(hours=2))
 
     isactive = Column(Boolean , nullable=False ,default= True)
+
 
