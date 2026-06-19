@@ -3,7 +3,11 @@ import React from 'react'
 import QRCode from "react-qr-code"
 import './App.css'
 
+
+
+
 export default function Home() {
+    
     const [history, setHistory] = useState([])
       const [url, setUrl] = useState('')
       const [output, setOutput] = useState('')
@@ -22,12 +26,14 @@ export default function Home() {
         setLoading(true)
         setOutput('')
         try {
-          const res = await fetch('http://127.0.0.1:8000/shorten', {
+          const API_URL = import.meta.env.VITE_BACKEND_URL;
+          const res = await fetch(`${API_URL}/shorten`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url })
           })
           const data = await res.json()
+          console.log(data)
           const shortUrl = data.short_url || JSON.stringify(data)
           setOutput(shortUrl)
           const updatedHistory = [
@@ -52,7 +58,7 @@ export default function Home() {
       return (
   <main className="container">
     <div className="hero-card">
-      <h1>🔗 URL Shortener</h1>
+      <h1>ShortURL</h1>
       <p className="subtitle">
         Transform long URLs into short, shareable links.
       </p>

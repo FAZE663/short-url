@@ -9,6 +9,7 @@ import os
 
 
 FRONTEND_URL = os.getenv('FRONTEND_URL')
+REDIRECT_URL = os.getenv('REDIRECT_URL')
 
 
 from .database.db import get_db
@@ -48,7 +49,7 @@ def short(payload : Payload , db : Session = Depends(get_db) ):
     addentry(db, shurl,lourl)
 
     return {
-        "short_url": f"{FRONTEND_URL}/{shurl}"
+        "short_url": f"{REDIRECT_URL}/{shurl}"
     }
 
 
