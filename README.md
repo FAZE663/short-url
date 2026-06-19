@@ -1,45 +1,250 @@
-# ShortURL — Initial Phase
+# ShortURL
 
-This repository contains a minimal URL shortener prototype (initial phase). The project provides a FastAPI backend and a small React frontend (Vite) for creating short links and resolving them.
+A full-stack URL shortening service built with FastAPI, React, and PostgreSQL.
 
-Quick overview
+## Live Demo
 
-- **Backend:** [backend/main.py](backend/main.py) — FastAPI app with `/shorten` and resolver `/{key}` (in-memory store for demo).
-- **Frontend:** [frontend](frontend/) — Vite + React app to submit URLs to the API.
+Frontend: https://short-url-blush-eight.vercel.app/
 
-How to run (dev)
+Backend API: https://short-url-2y17.onrender.com
 
-1. Backend (FastAPI):
+---
+
+## Features
+
+* Create shortened URLs
+* Automatic redirection to original URLs
+* PostgreSQL persistence
+* URL expiration support
+* Click tracking
+* QR code generation for shortened links
+* Recent URL history stored in browser localStorage
+* Responsive React frontend
+* FastAPI REST backend
+* Environment variable based configuration
+* Deployed using Vercel and Render
+
+---
+
+## Tech Stack
+
+### Frontend
+
+* React
+* Vite
+* React Router
+* CSS
+
+### Backend
+
+* FastAPI
+* SQLAlchemy
+* PostgreSQL
+* Uvicorn
+
+### Deployment
+
+* Vercel (Frontend)
+* Render (Backend + PostgreSQL)
+
+---
+
+## Project Structure
+
+```text
+backend/
+├── main.py
+├── models.py
+├── database.py
+├── storage.py
+
+frontend/
+├── src/
+├── public/
+├── package.json
+
+.env
+requirements.txt
+README.md
+```
+
+---
+
+## Running Locally
+
+### Backend
+
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
-pip install uvicorn
+```
+
+Start the server:
+
+```bash
 uvicorn backend.main:app --reload
 ```
 
-2. Frontend (React/Vite):
+Backend runs on:
+
+```text
+http://localhost:8000
+```
+
+---
+
+### Frontend
+
+Navigate to frontend:
 
 ```bash
 cd frontend
+```
+
+Install dependencies:
+
+```bash
 npm install
+```
+
+Start development server:
+
+```bash
 npm run dev
 ```
 
-Notes
+Frontend runs on:
 
-- The backend currently uses an in-memory store — data will be lost on restart.
-- During development run the React dev server (Vite) for hot reload; in production build the frontend and serve static files from the backend.
+```text
+http://localhost:5173
+```
 
-Planned work / TODOs (initial priorities)
+---
 
-- Click counts: track redirect counts per short link and expose metrics.
-- Database migration: add PostgreSQL backing store and migrations (Alembic or similar).
-- Persistence: replace the in-memory store with a durable DB and connection pooling.
-- Validation & security: validate submitted URLs, add rate limiting, and protect endpoints.
-- Serve frontend from backend: build React app and mount static files in FastAPI for a single origin deployment.
-- Tests: add unit and integration tests for API endpoints and redirect behavior.
-- CI/CD: add CI pipeline to run tests and linting, and CD to deploy builds.
-- Analytics & monitoring: basic logging, request metrics, and error tracking.
+## Environment Variables
 
+### Backend
 
+```env
+DATABASE_URL=
+FRONTEND_URL=
+BASE_URL=
+```
 
+### Frontend
+
+```env
+VITE_BACKEND_URL=
+```
+
+---
+
+## API Endpoints
+
+### Create Short URL
+
+```http
+POST /shorten
+```
+
+Request:
+
+```json
+{
+  "url": "https://example.com"
+}
+```
+
+Response:
+
+```json
+{
+  "short_url": "https://short-url-2y17.onrender.com/abc123"
+}
+```
+
+---
+
+### Redirect
+
+```http
+GET /{short_code}
+```
+
+Redirects the user to the original URL.
+
+---
+
+## Database Schema
+
+### URLs Table
+
+| Column     | Type      |
+| ---------- | --------- |
+| id         | Integer   |
+| shurl      | String    |
+| url        | String    |
+| clicks     | Integer   |
+| created_at | Timestamp |
+| expires_at | Timestamp |
+| isactive   | Boolean   |
+
+---
+
+## Expiration Handling
+
+Expired URLs are lazily invalidated.
+
+When an expired URL is accessed:
+
+1. Expiration is checked.
+2. The URL is marked inactive.
+3. The user is redirected to an error page.
+
+This avoids unnecessary background cleanup jobs while keeping lookup performance efficient.
+
+---
+
+## Current Limitations
+
+* No custom aliases yet
+* No analytics dashboard or statistics endpoint
+* No background cleanup of expired URLs
+* No authentication or user accounts
+* No rate limiting
+* Error responses in the frontend currently appear as hyperlinks due to UI handling and need refinement
+
+---
+
+## Future Improvements
+
+* Custom short URL aliases
+* Analytics endpoint
+* URL management dashboard
+* Redis caching
+* Background cleanup jobs
+* Docker support
+* Automated testing
+* CI/CD pipeline
+* Rate limiting and abuse prevention
+* User accounts and link ownership
+
+---
+
+## Learning Objectives
+
+This project was built to explore:
+
+* REST API development with FastAPI
+* SQLAlchemy ORM
+* PostgreSQL integration
+* React frontend development
+* Deployment workflows
+* Environment variable management
+* CORS configuration
+* URL redirection systems
+* Full-stack application architecture
+
+```
+```
