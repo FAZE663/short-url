@@ -11,6 +11,7 @@ export default function Home() {
     const [history, setHistory] = useState([])
       const [url, setUrl] = useState('')
       const [output, setOutput] = useState('')
+      const [error , setError] = useState('')
       const [loading, setLoading] = useState(false)
     
       useEffect(()=>{
@@ -49,7 +50,8 @@ export default function Home() {
             JSON.stringify(updatedHistory)
           )
         } catch (err) {
-          setOutput('Error creating short link')
+          setOutput('')
+          setError("Failed to shorten URL")
         } finally {
           setLoading(false)
         }
@@ -109,6 +111,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+    )}
+
+    { error && (
+      <div className="error">
+        {error}
+      </div>
     )}
 
     {history.length > 0 && (
